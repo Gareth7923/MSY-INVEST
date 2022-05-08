@@ -1,8 +1,40 @@
 {
   "expo": {
     "name": "msy-invest",
+    "icon": "./assets/images/icone-msy.png",
     "slug": "msy-invest",
     "version": "1.0.0",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "madtec.be": {
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            },
+            "mad-tec.be": {
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            },
+            "msydropshipping.be": {
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            },
+            "msyds.madtec.be": {
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
+      },
+      "bundleIdentifier": "com.gareth7923.msy-invest"
+    },
     "assetBundlePatterns": [
       "**/*"
     ]
