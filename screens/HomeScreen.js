@@ -6,6 +6,7 @@ import { SearchBar } from 'react-native-elements';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store'
 import useAuth from "../hooks/useAuth";
+/* */
 
 const BarStat = [
   {
