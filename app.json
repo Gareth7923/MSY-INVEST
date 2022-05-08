@@ -2,7 +2,7 @@
   "expo": {
     "name": "msy-invest",
     "icon": "./assets/images/icone-msy.png",
-    "slug": "msy-invest",
+    "slug": "msy-invest", 
     "version": "1.0.0",
     "ios": {
       "supportsTablet": true,
