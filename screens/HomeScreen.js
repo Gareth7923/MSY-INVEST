@@ -7,7 +7,6 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store'
 import useAuth from "../hooks/useAuth";
 
-
 const BarStat = [
   {
     id: "1",
