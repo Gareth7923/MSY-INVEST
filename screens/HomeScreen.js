@@ -124,9 +124,9 @@ const HomeScreen = ({ navigation }) => {
         placeholder="Rechercher"
         style={{ fontSize: 16 }}
       />
-      <View style={tw`bg-zinc-300 mt-3 pt-3 rounded-t-3xl `}>
+      <View style={tw`bg-zinc-300 mt-3 pt-3 rounded-t-3xl`}>
       {loading ? 
-        <ActivityIndicator size="large" color="#B5000D" style={tw`h-1/2 items-center`}/> :
+        <ActivityIndicator size="large" color="#B5000D" style={tw`items-center mb-300 pt-50`}/> :
             <FlatList
                   contentContainerStyle={{ flexGrow: 1, alignItems: "center", marginBottom:50,paddingBottom:260, }}
                   data={ArrayDetailsOrders}

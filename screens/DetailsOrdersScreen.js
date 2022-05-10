@@ -114,13 +114,14 @@ const DetailsOrdersScreen = ({ route }) => {
         <ScrollView style={styles.scrollView}>
           <SwipeProvider>
             {item.produits.map((product) =>
-              <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(product) }}>
+              
                 <SwipeItem
                   style={styles.button}
                   swipeContainerStyle={styles.swipeContentContainerStyle}
                   leftButtons={leftButton}
                   rightButtons={rightButton}
                 >
+                  <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(product) }}>
                   <View style={tw`flex-row justify-between`}>
                     <View style={tw`min-h-full w-22 `}>
                       <Image
@@ -137,8 +138,9 @@ const DetailsOrdersScreen = ({ route }) => {
                       <Text>{"x " + product["QUAN"]}</Text>
                     </View>
                   </View>
+                  </Pressable>
                 </SwipeItem>
-              </Pressable>
+              
             )}
           </SwipeProvider>
         </ScrollView>
