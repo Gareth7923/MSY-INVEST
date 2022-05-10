@@ -4,7 +4,6 @@ import tw from 'twrnc';
 import { Feather } from '@expo/vector-icons' ;
 import useAuth from "../hooks/useAuth";
 
-"KtzKKjxGeDVHYaxjNvtYh4MA"
 const LoginScreen = () => {
   const [textencrypt, setTextencrypt] = useState(true);
   const [usercode, setUsercode] = useState("KtzKKjxGeDVHYaxjNvtYh4MA");

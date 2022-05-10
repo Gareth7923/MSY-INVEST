@@ -39,28 +39,31 @@ const HomeScreen = ({ navigation }) => {
 
   const [FilterStatus, setFilterStatus] = useState("Toutes");
   const [ArrayStatus, setArrayStatus] = useState(BarStat);
-  const [ArrayDetailsOrders, setArrayDetailsOrders] = useState();
+  const [ArrayDetailsOrders, setArrayDetailsOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const getDetailsOrders = async () => {
-    var tab = [];
+  const getDetailsOrders = async  () => {
+        try {
+          var api = null;
 
-        await fetch("https://msyds.madtec.be/api/app/commande/15438", {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "userid": "APP",
-              "authorization": user,
-            },
-        })
-        .then(response => response.json())
-        .then((json) =>{
-          tab.push(json[0]);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+          var tab = [];
+          for (var order of orders) {
+            api = await axios.get("https://msyds.madtec.be/api/app/commande/" + order["id"], {
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "userid": "APP",
+                "authorization": user,
+              },
+            });
 
-      console.log(tab);
+            tab.push(api.data[0]);
+          }
+
+          return setArrayDetailsOrders(tab), setLoading(false);
+        } catch (error) {
+          return console.error(error);
+        }
   }
 
   useEffect(() => {
@@ -121,61 +124,59 @@ const HomeScreen = ({ navigation }) => {
         placeholder="Rechercher"
         style={{ fontSize: 16 }}
       />
-      
-          <FlatList
-            contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
-            style={tw`bg-zinc-300 h-full mt-3 pt-3  rounded-t-3xl `}
-            data={ArrayDetailsOrders}
-            KeyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("DetailsOrdersScreen", {item})}
-                style={tw`pl-6 pr-6 pb-4 pt-4 bg-white m-2 w-90 rounded-xl shadow-md  `}
-              >
-                <View>
-                  <ActivityIndicator size="large" />
-                  <View style={tw`flex-row justify-between`}>
-                    <Text style={tw`text-zinc-500 text-base font-bold pr-4`}>
-                      {item.cust_company}
-                    </Text>
-                    <Text style={tw`text-zinc-500 text-base font-light pr-2`}>
-                      {item.type}
-                    </Text>
-                    <View
-                      style={tw`flex-row justify-around pt-0.5 rounded-xl w-30 bg-orange-400`}
+      <View style={tw`bg-zinc-300 mt-3 pt-3 rounded-t-3xl `}>
+      {loading ? 
+        <ActivityIndicator size="large" color="#B5000D" style={tw`h-1/2 items-center`}/> :
+            <FlatList
+                  contentContainerStyle={{ flexGrow: 1, alignItems: "center", marginBottom:50,paddingBottom:260, }}
+                  data={ArrayDetailsOrders}
+                  KeyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("DetailsOrdersScreen", {item})}
+                      style={tw`pl-6 pr-6 pt-4 pb-4 bg-white m-2 w-90 rounded-xl shadow-md  `}
                     >
-                      <Icon type="antdesign" name="dropbox" color="white" />
-                      <Text style={tw`text-white text-sm font-light`}>
-                        {item.status}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={tw`flex-row justify-between`}>
-                    <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
-                      {"#" + item.id}
-                    </Text>
-                    <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
-                      {item.date}
-                    </Text>
-                    <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
-                      {item.poids + " kg"}
-                    </Text>
-                    <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
-                      {item.qu + " art."}
-                    </Text>
-                  </View>
-                  <Text
-                    numberOfLines={1}
-                    style={tw`text-zinc-500 mt-2 text-base font-semibold`}
-                  >
-                    {}
-                  </Text>
-                </View>
-                
-              </TouchableOpacity>
-            )}
+                      <View>
+                        <View style={tw`flex-row justify-between`}>
+                          <Text style={tw`text-zinc-500 text-base font-bold pr-4`}>
+                            {item.cust_company}
+                          </Text>
+                          <Text style={tw`text-zinc-500 text-base font-light pr-2`}>
+                            {item.type}
+                          </Text>
+                          <View
+                            style={tw`flex-row justify-around pt-0.5 rounded-xl w-30 bg-orange-400`}
+                          >
+                            <Icon type="antdesign" name="dropbox" color="white" />
+                            <Text style={tw`text-white text-sm font-light`}>
+                              {item.status}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={tw`flex-row justify-between`}>
+                          <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
+                            {"#" + item.id}
+                          </Text>
+                          <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
+                            {item.date}
+                          </Text>
+                          <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
+                            {item.poids + " kg"}
+                          </Text>
+                          <Text style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
+                            {item.qu + " art."}
+                          </Text>
+                        </View>
+                        <Text numberOfLines={1} style={tw`text-zinc-500 mt-2 text-base font-semibold`}>
+                        {item.produits.map((prod) =>prod["QUAN"] + " x " + prod["DESC"])}
+                        </Text>
+                      </View>
+                      
+                    </TouchableOpacity>
+                  )}
           />
-          
+        }
+      </View>
     </View>
   );
 };

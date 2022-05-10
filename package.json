@@ -33,6 +33,7 @@
     "react-native-screens": "~3.10.1",
     "react-native-swipe-item": "^0.6.0",
     "react-native-web": "0.17.1",
+    "react-promise-tracker": "^2.1.0",
     "twrnc": "^3.2.0"
   },
   "devDependencies": {

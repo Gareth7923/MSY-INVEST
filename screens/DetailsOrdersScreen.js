@@ -3,42 +3,19 @@ import React, { useState, useEffect } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
 import { SwipeItem, SwipeButtonsContainer, SwipeProvider } from "react-native-swipe-item";
-import {FlatListSlider} from 'react-native-flatlist-slider';
+import { SliderBox } from "react-native-image-slider-box";
+import ImageZoom from 'react-native-image-pan-zoom';
 
 
-const data2 = {
-  id: "123",
-  client: "Auto MM",
-  type: "Standard",
-  date: "10/12/2021",
-  weight: "12kg",
-  quantity: "13 Art.",
-  commandeDescription: "1 x Notebook, 2 x Wireless Headphones, 1 x Wat .. ",
-  commandeScreen: "CommandeScreen",
-  status: "A preparer",
-};
-
-const images = [
-  {
-    banner: require('../assets/images/Herzberg-HG-8027-Clayette-de-Stockage-Galvanisee-HG-8027-1.jpg'),
-    desc: 'Silent Waters in the mountains in midst of Himilayas',
-   
-  },
-  {
-    banner: require('../assets/images/Herzberg-HG-8027-Clayette-de-Stockage-Galvanisee-HG-8027-2.webp'),
-    desc: 'Silent Waters in the mountains in midst of Himilayas',
-  },
-]
-
- 
-const DetailsOrdersScreen = ({ route, navigation }) => {
+const DetailsOrdersScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [modalgalleryVisible, setModalgalleryVisible] = useState(false);
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentimage, setCurrentImage] = useState(null);
+  const [currentproduct, setCurrentPorduct] = useState({});
 
   const { item } = route.params;
-  
+
   const leftButton = (
     <SwipeButtonsContainer
       style={{
@@ -73,6 +50,10 @@ const DetailsOrdersScreen = ({ route, navigation }) => {
       </TouchableOpacity>
     </SwipeButtonsContainer>
   );
+
+  useEffect(() => {
+    console.log(currentproduct["PICS"]);
+  })
 
   return (
     <View style={tw`bg-white min-h-full`}>
@@ -126,12 +107,48 @@ const DetailsOrdersScreen = ({ route, navigation }) => {
         </View>
       </View>
 
+      <View>
+        <View style={tw`flex-row ml-8 pb-4`}>
+          <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          <SwipeProvider>
+            {item.produits.map((product) =>
+              <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(product) }}>
+                <SwipeItem
+                  style={styles.button}
+                  swipeContainerStyle={styles.swipeContentContainerStyle}
+                  leftButtons={leftButton}
+                  rightButtons={rightButton}
+                >
+                  <View style={tw`flex-row justify-between`}>
+                    <View style={tw`min-h-full w-22 `}>
+                      <Image
+                        resizeMode="cover"
+                        style={tw`h-full w-full rounded-xl`}
+                        source={{ uri: product["PICS"][0] }}
+                      />
+                    </View>
+                    <View style={tw`justify-center px-6`}>
+                      <Text>{product["SKU"]}</Text>
+                      <Text>{product["DESC"]}</Text>
+                    </View>
+                    <View style={tw`mr-4 justify-center`}>
+                      <Text>{"x " + product["QUAN"]}</Text>
+                    </View>
+                  </View>
+                </SwipeItem>
+              </Pressable>
+            )}
+          </SwipeProvider>
+        </ScrollView>
+      </View>
+
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
@@ -147,132 +164,58 @@ const DetailsOrdersScreen = ({ route, navigation }) => {
                 />
               </Text>
 
-              <FlatListSlider 
-                data={images} 
-                imageKey={'banner'}
-                autoscroll={false}
-                local
-                onPress={index => {
+              <SliderBox
+                images={currentproduct["PICS"]}
+                sliderBoxHeight={250}
+                resizeMode="contain"
+                onCurrentImagePressed={index => {
                   setModalgalleryVisible(true);
                   setCurrentImage(index);
                 }}
-              />
+                firstItem={currentimage} />
 
-              <Modal visible={modalgalleryVisible}>
-                <View style={tw`flex-1 justify-center bg-black`}>
-              
-                <FlatListSlider 
-                  data={images} 
-                  imageKey={'banner'}
-                  autoscroll={false}
-                  local
-                  onPress={index => {
-                    setModalgalleryVisible(true);
-                    setCurrentImage(index);
-                  }}
-                />
-              </View>
-            </Modal>
-          </Pressable>
-
-          <View style={tw`pb-6 items-center`}>
-            <View>
-              <Text
-                style={tw`text-red-700 ml-4 text-3xl text-center mb-2 mt-5`}
+              <Modal 
+                visible={modalgalleryVisible} 
+                onRequestClose={() => {
+                  setModalgalleryVisible(!modalgalleryVisible);}}
               >
-                Clayette de Stockage Galvanisée
-              </Text>
-            </View>
-            <View style={tw`flex-row mb-2`}>
-              <Text style={tw`font-light`}>SKU :</Text>
-              <Text style={tw`text-red-700 font-bold`}>
-                {" "}
-                Herzberg HG-8027
-              </Text>
-            </View>
-            <View style={tw`flex-row mb-2`}>
-              <Text style={tw`font-light`}>Code produit :</Text>
-              <Text style={tw`text-red-700 font-bold`}> 0634158797989</Text>
-            </View>
-            <View style={tw`flex-row mb-2`}>
-              <Text style={tw`font-light`}>Quantité : </Text>
-              <Text style={tw`text-red-700 font-bold`}> x 2</Text>
-            </View>
-            <View style={tw`flex-row mb-2`}>
-              <Text style={tw`font-light`}>Poids :</Text>
-              <Text style={tw`text-red-700 font-bold`}>14 kg</Text>
+                <View style={tw`flex-1 justify-center bg-black`}>
+                  <ImageZoom
+                    cropWidth={Dimensions.get('window').width}
+                    cropHeight={Dimensions.get('window').height}
+                    imageWidth={380}
+                    imageHeight={600}>
+                    <SliderBox
+                      images={currentproduct["PICS"]}
+                      sliderBoxHeight={600}
+                      resizeMode="contain"
+                      firstItem={currentimage} />
+                  </ImageZoom>
+
+                </View>
+              </Modal>
+            </Pressable>
+
+            <View style={tw`pb-6 items-center`}>
+              <View>
+                <Text style={tw`text-red-700 ml-4 text-3xl text-center mb-2 mt-5`}>{currentproduct["DESC"]}</Text>
+              </View>
+              <View style={tw`flex-row mb-2`}>
+                <Text style={tw`font-light`}>SKU :</Text>
+                <Text style={tw`text-red-700 font-bold`}>{currentproduct["SKU"]}</Text>
+              </View>
+              <View style={tw`flex-row mb-2`}>
+                <Text style={tw`font-light`}>Code produit :</Text>
+                <Text style={tw`text-red-700 font-bold`}>{currentproduct["EAN"]}</Text>
+              </View>
+              <View style={tw`flex-row mb-2`}>
+                <Text style={tw`font-light`}>Quantité : </Text>
+                <Text style={tw`text-red-700 font-bold`}>{"x " + currentproduct["QUAN"]}</Text>
+              </View>
             </View>
           </View>
         </View>
-    </View>
       </Modal >
-
-  <View>
-    <View style={tw`flex-row ml-8 pb-4`}>
-      <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
-    </View>
-    <ScrollView style={styles.scrollView}>
-      <SwipeProvider>
-        <Pressable onPress={() => setModalVisible(true)}>
-          <SwipeItem
-            style={styles.button}
-            swipeContainerStyle={styles.swipeContentContainerStyle}
-            leftButtons={leftButton}
-            rightButtons={rightButton}
-          >
-            <View style={tw`flex-row justify-between `}>
-              <View style={tw`min-h-full w-22 `}>
-                <Image
-                  resizeMode="cover"
-                  style={tw`h-full w-full rounded-xl`}
-                  source={require("../assets/images/Herzberg-HG-8027-Clayette-de-Stockage-Galvanisee-HG-8027-1.jpg")}
-                />
-              </View>
-              <View style={tw`justify-center`}>
-                <Text>Ska5599741</Text>
-                <Text>Clayette de Stockage Galv ...</Text>
-              </View>
-              <View style={tw`mr-4 justify-center`}>
-                <Text>x 2</Text>
-              </View>
-            </View>
-          </SwipeItem>
-        </Pressable>
-        <SwipeItem
-          style={styles.button}
-          swipeContainerStyle={styles.swipeContentContainerStyle}
-          leftButtons={leftButton}
-          rightButtons={rightButton}
-        >
-          <Text>Swipe me!</Text>
-        </SwipeItem>
-        <SwipeItem
-          style={styles.button}
-          swipeContainerStyle={styles.swipeContentContainerStyle}
-          leftButtons={leftButton}
-          rightButtons={rightButton}
-        >
-          <Text>Swipe me!</Text>
-        </SwipeItem>
-        <SwipeItem
-          style={styles.button}
-          swipeContainerStyle={styles.swipeContentContainerStyle}
-          leftButtons={leftButton}
-          rightButtons={rightButton}
-        >
-          <Text>Swipe me!</Text>
-        </SwipeItem>
-        <SwipeItem
-          style={styles.button}
-          swipeContainerStyle={styles.swipeContentContainerStyle}
-          leftButtons={leftButton}
-          rightButtons={rightButton}
-        >
-          <Text>Swipe me!</Text>
-        </SwipeItem>
-      </SwipeProvider>
-    </ScrollView>
-  </View>
     </View >
   );
 };
