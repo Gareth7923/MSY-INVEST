@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal, Pressable, Dimensions } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
 import { SwipeItem, SwipeButtonsContainer, SwipeProvider } from "react-native-swipe-item";
@@ -31,12 +31,14 @@ const images = [
 ]
 
  
-const DetailsOrdersScreen = () => {
+const DetailsOrdersScreen = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [modalgalleryVisible, setModalgalleryVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
 
+  const { item } = route.params;
+  
   const leftButton = (
     <SwipeButtonsContainer
       style={{
@@ -81,32 +83,28 @@ const DetailsOrdersScreen = () => {
           </Text>
         </View>
         <View style={tw`flex-row mb-2`}>
-          <Text style={tw`font-light`}>Client :</Text>
-          <Text style={tw`text-red-700 font-bold`}>{data2.client}</Text>
+          <Text style={tw`font-light`}>Client : </Text>
+          <Text style={tw`text-red-700 font-bold`}>{item.cust_company}</Text>
         </View>
         <View style={tw`flex-row mb-2`}>
-          <Text style={tw`font-light`}>Type :</Text>
-          <Text style={tw`text-red-700 font-bold`}>Standard</Text>
+          <Text style={tw`font-light`}>Type : </Text>
+          <Text style={tw`text-red-700 font-bold`}>{item.type}</Text>
         </View>
         <View style={tw`flex-row mb-2`}>
-          <Text style={tw`font-light`}>ID: </Text>
-          <Text style={tw`text-red-700 font-bold`}>#1456</Text>
+          <Text style={tw`font-light`}>ID : </Text>
+          <Text style={tw`text-red-700 font-bold`}>{"#" + item.id}</Text>
         </View>
         <View style={tw`flex-row mb-2`}>
-          <Text style={tw`font-light`}>Code barre :</Text>
-          <Text style={tw`text-red-700 font-bold`}>45896789</Text>
-        </View>
-        <View style={tw`flex-row mb-2`}>
-          <Text style={tw`font-light`}>Date :</Text>
-          <Text style={tw`text-red-700 font-bold`}>14/02/2022</Text>
+          <Text style={tw`font-light`}>Date : </Text>
+          <Text style={tw`text-red-700 font-bold`}>{item.date}</Text>
         </View>
         <View style={tw`flex-row mb-2`}>
           <Text style={tw`font-light`}>Poids total : </Text>
-          <Text style={tw`text-red-700 font-bold`}>12Kg</Text>
+          <Text style={tw`text-red-700 font-bold`}>{item.poids + " Kg"}</Text>
         </View>
         <View style={tw`flex-row mb-4`}>
           <Text style={tw`font-light`}>Quantité : </Text>
-          <Text style={tw`text-red-700 font-bold`}>13 Art.</Text>
+          <Text style={tw`text-red-700 font-bold`}>{item.qu + " Art"}</Text>
         </View>
         <View style={tw`flex-row text-center mb-2`}>
           <View
@@ -114,7 +112,7 @@ const DetailsOrdersScreen = () => {
           >
             <Icon type="antdesign" name="dropbox" color="white" />
             <Text style={tw`text-white 	text-center text-sm font-light`}>
-              A Preparer
+              {item.prep}
             </Text>
           </View>
           <View
