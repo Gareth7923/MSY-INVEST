@@ -5481,6 +5481,11 @@ react-native-swipe-item@^0.6.0:
   resolved "https://registry.yarnpkg.com/react-native-swipe-item/-/react-native-swipe-item-0.6.0.tgz#445143bfde66471b5f3b186d8db05ee9cbe2ed66"
   integrity sha512-c0PofiTJb5AzNAIUGqEfUSVrP46BSOTeRvmhdbdhA2kPuBgZLATRKtVL7/kGjtYEZ6nzR8QxgZVkza0tQaVrgA==
 
+react-native-view-overflow@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-view-overflow/-/react-native-view-overflow-0.0.5.tgz#56c49f0f7cdb9fd145de241d6f6bf4cfe5660915"
+  integrity sha512-p/peyU3IC7M84bZEz2K7hpLrKBPUT3W7/+wnXjGw40hX/Iaj0OmOqJI6mJcBUlpcHJvGYbx2OOpPZa4+hwJC6w==
+
 react-native-web@0.17.1:
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.17.1.tgz#90d473c89dd99b88bc9830b2a9fcdd2fc5f04902"

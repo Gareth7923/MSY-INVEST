@@ -34,7 +34,7 @@ const LoginScreen = () => {
           </View>
 
           <View style={tw`items-center mx-18`}>
-            <TouchableOpacity style={tw`w-full bg-red-700 py-4 rounded-full shadow-xl`} onPress={() => {verifyuser(usercode)}}>
+            <TouchableOpacity style={tw`w-full bg-red-700 py-4 rounded-full shadow-xl`} onPress={() => verifyuser(usercode)}>
               <Text style={tw`text-center text-white text-base font-semibold`} >Connectez-vous</Text>
             </TouchableOpacity>
             <Text style={tw`text-center text-red-700 text-xs font-semibold pt-18 pb-8`}>Developped By Control Studio</Text>

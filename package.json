@@ -32,6 +32,7 @@
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-swipe-item": "^0.6.0",
+    "react-native-view-overflow": "^0.0.5",
     "react-native-web": "0.17.1",
     "react-promise-tracker": "^2.1.0",
     "twrnc": "^3.2.0"

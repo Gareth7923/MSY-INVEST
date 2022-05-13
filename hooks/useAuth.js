@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }) => {
         })
         .catch((error) => {
           console.log(error);
+          logout();
         
             db.transaction((tx) => {
               tx.executeSql('CREATE TABLE IF NOT EXISTS tbl_user(user_id INTEGER PRIMARY KEY AUTOINCREMENT, user_code VARCHAR(30))', []);
