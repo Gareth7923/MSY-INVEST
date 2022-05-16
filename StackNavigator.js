@@ -15,7 +15,7 @@ const StackNavigator = () => {
       {user ? (
         <Stack.Group>
           <Stack.Screen options={{headerShown: false}} name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen options={{ title: 'Detail commande :',
+          <Stack.Screen options={{ title: 'Détail de commande :',
               headerStyle: {
                 backgroundColor: 'white',
               },

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal, Pressable, Dimensions, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal, Pressable, Dimensions, ActivityIndicator, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
@@ -11,17 +11,17 @@ import useAuth from "../hooks/useAuth";
 
 const DetailsOrdersScreen = ({ route }) => {
   const { user } = useAuth();
-  const { itemId } = route.params;
+  const { OrderId } = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalgalleryVisible, setModalgalleryVisible] = useState(false);
   const [currentimage, setCurrentImage] = useState(null);
   const [currentproduct, setCurrentPorduct] = useState({});
   const [Order, setOrder] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loadingOrder, setLoadingOrder] = useState(true);
+  const [loadingProducts, setloadingProducts] = useState(true);
 
-
-  const leftButton = (
+  const leftButton = (ProductId) =>(
     <SwipeButtonsContainer
       style={{
         alignSelf: "center",
@@ -33,12 +33,12 @@ const DetailsOrdersScreen = ({ route }) => {
         borderBottomLeftRadius: 10,
       }}
     >
-      <TouchableOpacity onPress={() => console.log("left button clicked")}>
+      <TouchableOpacity onPress={() => SwipeStatus(ProductId, 0)}>
         <Icon type="antdesign" size={70} name="close" color="white" />
       </TouchableOpacity>
     </SwipeButtonsContainer>
   );
-  const rightButton = (
+  const rightButton = (ProductId) => (
     <SwipeButtonsContainer
       style={{
         alignSelf: "center",
@@ -50,29 +50,57 @@ const DetailsOrdersScreen = ({ route }) => {
         borderBottomRightRadius: 10,
       }}
     >
-      <TouchableOpacity onPress={() => console.log("right button clicked")}>
+      <TouchableOpacity onPress={() => SwipeStatus(ProductId, 1)}>
         <Icon type="antdesign" size={70} name="check" color="white" />
       </TouchableOpacity>
     </SwipeButtonsContainer>
   );
 
-  async function getDetailsOrder() {
-    return await axios.get("https://msyds.madtec.be/api/app/commande/" + itemId, {
+  const getDetailsOrder = async () => {
+    axios.get("https://msyds.madtec.be/api/app/commande/" + OrderId, {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         'userid': 'APP',
         'authorization': user,
       },
-      timeout: 4000,
+      timeout: 5000,
     })
       .then((response) => {
         setOrder(response.data[0])
-        setLoading(false)
+        setLoadingOrder(false);
+        setloadingProducts(false);
       })
       .catch((error) =>
         console.warn(error)
       );
+  }
+
+  const SwipeStatus = async (ProductId, Status) => {
+      setloadingProducts(true);
+
+      const url = "https://msyds.madtec.be/api/app/commande/" + OrderId + "/prod/" + ProductId + "/status/" + Status;
+
+      axios.post(url, null, {
+        headers: {
+          'userid': 'APP',
+          'authorization': user,
+        }
+      })
+      .then((response) => {
+        setOrder(response.data[0]);
+        setloadingProducts(false);
+      })
+      .catch((error) =>
+        console.warn(error)
+      );
+
+  }
+
+  const ConvertDate = function(millisec) {
+    var length = millisec.length - 7;
+    var date = parseInt(millisec.substring(6,length));
+    return (new Date(date).toLocaleDateString('fr-FR'));
   }
 
   useEffect(() => {
@@ -81,16 +109,20 @@ const DetailsOrdersScreen = ({ route }) => {
 
   return (
     <View style={tw`flex-1 bg-white min-h-full`}>
-      {loading ? <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/2`} /> :
+      {loadingOrder ? <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/2`} /> :
         <View>
           <View style={tw`pb-6 items-center`}>
             <View>
               <Text style={tw`text-red-700 font-bold ml-4 text-3xl  mb-2 mt-5`}>
-                ZG011AQA
+                {"#" + Order.id}
               </Text>
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Client : </Text>
+              <Text style={tw`text-red-700 font-bold`}>{Order.cust_name}</Text>
+            </View>
+            <View style={tw`flex-row mb-2`}>
+              <Text style={tw`font-light`}>Société : </Text>
               <Text style={tw`text-red-700 font-bold`}>{Order.cust_company}</Text>
             </View>
             <View style={tw`flex-row mb-2`}>
@@ -98,12 +130,8 @@ const DetailsOrdersScreen = ({ route }) => {
               <Text style={tw`text-red-700 font-bold`}>{Order.type}</Text>
             </View>
             <View style={tw`flex-row mb-2`}>
-              <Text style={tw`font-light`}>ID : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{"#" + Order.id}</Text>
-            </View>
-            <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Date : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{Order.date}</Text>
+              <Text style={tw`text-red-700 font-bold`}>{ConvertDate(Order.date)}</Text>
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Poids total : </Text>
@@ -137,38 +165,44 @@ const DetailsOrdersScreen = ({ route }) => {
             <View style={tw`flex-row ml-8 pb-4`}>
               <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
             </View>
-            <ScrollView style={styles.scrollView}>
+            <View style={tw`flex-row justify-center`}>
+            {loadingProducts ? <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/3 `} /> :
               <SwipeProvider>
-                {Order.produits.map((product) =>
-                  <SwipeItem
-                    style={styles.button}
-                    swipeContainerStyle={styles.swipeContentContainerStyle}
-                    leftButtons={leftButton}
-                    rightButtons={rightButton}
-                  >
-                    <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(product) }}>
-                      <View style={tw`flex-row justify-between w-50`}>
-                        <View style={tw`min-h-full w-22`}>
-                          <Image
-                            resizeMode="cover"
-                            style={tw`h-full w-full rounded-xl`}
-                            source={{ uri: product["PICS"][0] }}
-                          />
+                <FlatList
+                  contentContainerStyle={{ flexGrow: 1, paddingBottom: 720, marginBottom: 50 }}
+                  data={Order.produits}
+                  keyExtractor={(item, index) => index}
+                  renderItem={({ item }) => (
+                    <SwipeItem
+                      style={styles.button}
+                      swipeContainerStyle={styles.swipeContentContainerStyle}
+                      leftButtons={leftButton(item.ID)}
+                      rightButtons={rightButton(item.ID)}
+                    >
+                      <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(item) }}>
+                        <View style={tw`flex-row justify-between w-50`}>
+                          <View style={tw`min-h-full w-22`}>
+                            <Image
+                              resizeMode="cover"
+                              style={tw`h-full w-full rounded-xl`}
+                              source={{ uri: item.PICS[0] }}
+                            />
+                          </View>
+                          <View style={tw`px-6 p-5 justify-between w-full`}>
+                            <Text>{item["SKU"]}</Text>
+                            <Text numberOfLines={1}>{item.DESC}</Text>
+                          </View>
+                          <View style={tw`mr-4 justify-center`}>
+                            <Text>{"x " + item.QUAN}</Text>
+                          </View>
                         </View>
-                        <View style={tw`px-6 p-5 justify-between w-full`}>
-                          <Text>{product["SKU"]}</Text>
-                          <Text numberOfLines={1}>{product["DESC"]}</Text>
-                        </View>
-                        <View style={tw`mr-4 justify-center`}>
-                          <Text>{"x " + product["QUAN"]}</Text>
-                        </View>
-                      </View>
-                    </Pressable>
-                  </SwipeItem>
-
-                )}
+                      </Pressable>
+                    </SwipeItem>
+                  )}
+                />
               </SwipeProvider>
-            </ScrollView>
+              }
+            </View>
           </View>
 
           <Modal
@@ -192,7 +226,7 @@ const DetailsOrdersScreen = ({ route }) => {
                   </Text>
 
                   <SliderBox
-                    images={currentproduct["PICS"]}
+                    images={currentproduct.PICS}
                     sliderBoxHeight={250}
                     resizeMode="contain"
                     onCurrentImagePressed={index => {
@@ -214,7 +248,7 @@ const DetailsOrdersScreen = ({ route }) => {
                         imageWidth={380}
                         imageHeight={600}>
                         <SliderBox
-                          images={currentproduct["PICS"]}
+                          images={currentproduct.PICS}
                           sliderBoxHeight={600}
                           resizeMode="contain"
                           firstItem={currentimage} />
@@ -223,21 +257,21 @@ const DetailsOrdersScreen = ({ route }) => {
                   </Modal>
                 </Pressable>
 
-                <View style={tw`pb-6 items-center`}>
+                <View style={tw`pb-6 items-center px-4`}>
                   <View>
-                    <Text style={tw`text-red-700 ml-4 text-3xl text-center mb-2 mt-5`}>{currentproduct["DESC"]}</Text>
+                    <Text numberOfLines={2} style={tw`text-red-700 text-2xl text-center mb-5 mt-8`}>{currentproduct.DESC}</Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>SKU : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{currentproduct["SKU"]}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>{currentproduct.SKU}</Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>Code produit : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{currentproduct["EAN"]}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>{currentproduct.EAN}</Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>Quantité : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{"x" + currentproduct["QUAN"]}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>{"x" + currentproduct.QUAN}</Text>
                   </View>
                 </View>
               </View>
