@@ -97,10 +97,10 @@ const DetailsOrdersScreen = ({ route }) => {
 
   }
 
-  const ConvertDate = function(millisec) {
-    var length = millisec.length - 7;
-    var date = parseInt(millisec.substring(6,length));
-    return (new Date(date).toLocaleDateString('fr-FR'));
+  const ConvertDate = function(seconds) {
+    const dateMilliseconds = seconds * 1000;
+
+    return (new Date(dateMilliseconds).toLocaleDateString('fr-FR'));
   }
 
   useEffect(() => {
