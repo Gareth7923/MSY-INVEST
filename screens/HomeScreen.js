@@ -15,9 +15,10 @@ import axios from 'axios';
 const HomeScreen = ({ navigation }) => {
   const { user, logout } = useAuth();
 
-  const [currentStaus, setCurrentStaus] = useState("Toutes");
+  const [currentStatus, setCurrentStatus] = useState("Toutes");
   const [ArrayStatus, setArrayStatus] = useState([]);
   const [orders, setOrders] = useState([]);
+
 
   useEffect(() => {
     const getOrders = async () => {
@@ -29,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
             'authorization': user,
           }
       })
-      .then((response) => {;
+      .then((response) => {
         setOrders(response.data);
       })
       .catch((error) => {
@@ -39,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     getOrders();
-  }, []);
+  }, [user]);
 
 
   useEffect(() => {
@@ -66,11 +67,25 @@ const HomeScreen = ({ navigation }) => {
     getOrderStatus();
   }, [orders]);
 
-  const ConvertDate = function(millisec) {
-    var length = millisec.length - 7;
-    var date = parseInt(millisec.substring(6,length));
-    return (new Date(date).toLocaleDateString('fr-FR'));
+  
+  const ConvertDate = function(seconds) {
+    const dateMilliseconds = seconds * 1000;
+
+    return (new Date(dateMilliseconds).toLocaleDateString('fr-FR'));
   }
+
+  useEffect(() => {
+    const ArrayFilterStatus = () => {
+      if(currentStatus == "Toutes") {
+
+      } else {
+        oi
+      }
+    }
+  
+    ArrayFilterStatus();
+  }, [currentStatus])
+  
 
   return (
     <View style={tw`bg-white`}>
@@ -94,16 +109,16 @@ const HomeScreen = ({ navigation }) => {
         renderItem={({ item }) => (
           <View style={tw`pl-6 h-13 mt-8`}>
             <TouchableOpacity
-              onPress={() => { setCurrentStaus(item.status) }}
+              onPress={() => {[setCurrentStatus(item.status)]}}
               style={
-                currentStaus == item.status
+                currentStatus == item.status
                   ? tw`border-b-2 border-red-700 pb-1`
                   : tw`border-b-0`
               }
             >
               <Text
                 style={
-                  currentStaus == item.status
+                  currentStatus == item.status
                     ? [{ fontSize: 18 }, tw`text-red-700 font-bold`]
                     : [{ fontSize: 16 }, tw`text-black font-light`]
                 }
@@ -154,7 +169,6 @@ const HomeScreen = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-
             </TouchableOpacity>
           )}
         />
