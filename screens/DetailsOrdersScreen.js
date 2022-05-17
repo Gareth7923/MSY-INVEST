@@ -1,13 +1,28 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal, Pressable, Dimensions, ActivityIndicator, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Modal,
+  Pressable,
+  Dimensions,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
-import { SwipeItem, SwipeButtonsContainer, SwipeProvider } from "react-native-swipe-item";
+import {
+  SwipeItem,
+  SwipeButtonsContainer,
+  SwipeProvider,
+} from "react-native-swipe-item";
 import { SliderBox } from "react-native-image-slider-box";
-import ImageZoom from 'react-native-image-pan-zoom';
+import ImageZoom from "react-native-image-pan-zoom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
-
 
 const DetailsOrdersScreen = ({ route }) => {
   const { user } = useAuth();
@@ -21,7 +36,7 @@ const DetailsOrdersScreen = ({ route }) => {
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
 
-  const leftButton = (ProductId) =>(
+  const leftButton = (ProductId) => (
     <SwipeButtonsContainer
       style={{
         alignSelf: "center",
@@ -57,51 +72,48 @@ const DetailsOrdersScreen = ({ route }) => {
   );
 
   const getDetailsOrder = async () => {
-    axios.get("https://msyds.madtec.be/api/app/commande/" + OrderId, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'userid': 'APP',
-        'authorization': user,
-      },
-      timeout: 5000,
-    })
+    axios
+      .get("https://msyds.madtec.be/api/app/commande/" + OrderId, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          userid: "APP",
+          authorization: user,
+        },
+        timeout: 5000,
+      })
       .then((response) => {
-        setOrder(response.data[0])
+        setOrder(response.data[0]);
         setLoadingOrder(false);
         setloadingProducts(false);
       })
-      .catch((error) =>
-        console.warn(error)
-      );
-  }
+      .catch((error) => console.warn(error));
+  };
 
   const SwipeStatus = async (ProductId, Status) => {
-      setloadingProducts(true);
+    setloadingProducts(true);
 
-      const url = "https://msyds.madtec.be/api/app/commande/" + OrderId + "/prod/" + ProductId + "/status/" + Status;
+    const url =
+      "https://msyds.madtec.be/api/app/commande/" + OrderId + "/prod/" + ProductId + "/status/" + Status;
 
-      axios.post(url, null, {
+    axios.post(url, null, {
         headers: {
-          'userid': 'APP',
-          'authorization': user,
-        }
+          userid: "APP",
+          authorization: user,
+        },
       })
       .then((response) => {
         setOrder(response.data[0]);
         setloadingProducts(false);
       })
-      .catch((error) =>
-        console.warn(error)
-      );
+      .catch((error) => console.warn(error));
+  };
 
-  }
-
-  const ConvertDate = function(seconds) {
+  const ConvertDate = function (seconds) {
     const dateMilliseconds = seconds * 1000;
 
-    return (new Date(dateMilliseconds).toLocaleDateString('fr-FR'));
-  }
+    return new Date(dateMilliseconds).toLocaleDateString("fr-FR");
+  };
 
   useEffect(() => {
     getDetailsOrder();
@@ -109,7 +121,9 @@ const DetailsOrdersScreen = ({ route }) => {
 
   return (
     <View style={tw`flex-1 bg-white min-h-full`}>
-      {loadingOrder ? <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/2`} /> :
+      {loadingOrder ? (
+        <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/2`} />
+      ) : (
         <View>
           <View style={tw`pb-6 items-center`}>
             <View>
@@ -123,7 +137,9 @@ const DetailsOrdersScreen = ({ route }) => {
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Société : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{Order.cust_company}</Text>
+              <Text style={tw`text-red-700 font-bold`}>
+                {Order.cust_company}
+              </Text>
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Type : </Text>
@@ -131,15 +147,21 @@ const DetailsOrdersScreen = ({ route }) => {
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Date : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{ConvertDate(Order.date)}</Text>
+              <Text style={tw`text-red-700 font-bold`}>
+                {ConvertDate(Order.date)}
+              </Text>
             </View>
             <View style={tw`flex-row mb-2`}>
               <Text style={tw`font-light`}>Poids total : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{Order.poids + " Kg"}</Text>
+              <Text style={tw`text-red-700 font-bold`}>
+                {Order.poids + " Kg"}
+              </Text>
             </View>
             <View style={tw`flex-row mb-4`}>
               <Text style={tw`font-light`}>Quantité : </Text>
-              <Text style={tw`text-red-700 font-bold`}>{Order.qu + " Art."}</Text>
+              <Text style={tw`text-red-700 font-bold`}>
+                {Order.qu + " Art."}
+              </Text>
             </View>
             <View style={tw`flex-row text-center mb-2`}>
               <View
@@ -166,42 +188,56 @@ const DetailsOrdersScreen = ({ route }) => {
               <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
             </View>
             <View style={tw`flex-row justify-center`}>
-            {loadingProducts ? <ActivityIndicator size="large" color="#B5000D" style={tw`top-1/3 `} /> :
-              <SwipeProvider>
-                <FlatList
-                  contentContainerStyle={{ flexGrow: 1, paddingBottom: 720, marginBottom: 50 }}
-                  data={Order.produits}
-                  keyExtractor={(item, index) => index}
-                  renderItem={({ item }) => (
-                    <SwipeItem
-                      style={styles.button}
-                      swipeContainerStyle={styles.swipeContentContainerStyle}
-                      leftButtons={leftButton(item.ID)}
-                      rightButtons={rightButton(item.ID)}
-                    >
-                      <Pressable onPress={() => { setModalVisible(true), setCurrentPorduct(item) }}>
-                        <View style={tw`flex-row justify-between w-50`}>
-                          <View style={tw`min-h-full w-22`}>
-                            <Image
-                              resizeMode="cover"
-                              style={tw`h-full w-full rounded-xl`}
-                              source={{ uri: item.PICS[0] }}
-                            />
-                          </View>
-                          <View style={tw`px-6 p-5 justify-between w-full`}>
-                            <Text>{item["SKU"]}</Text>
-                            <Text numberOfLines={1}>{item.DESC}</Text>
-                          </View>
-                          <View style={tw`mr-4 justify-center`}>
-                            <Text>{"x " + item.QUAN}</Text>
-                          </View>
-                        </View>
-                      </Pressable>
-                    </SwipeItem>
-                  )}
+              {loadingProducts ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#B5000D"
+                  style={tw`top-1/3 `}
                 />
-              </SwipeProvider>
-              }
+              ) : (
+                <SwipeProvider>
+                  <FlatList
+                    contentContainerStyle={{
+                      flexGrow: 1,
+                      paddingBottom: 720,
+                      marginBottom: 50,
+                    }}
+                    data={Order.produits}
+                    keyExtractor={(item, index) => index}
+                    renderItem={({ item }) => (
+                      <SwipeItem
+                        style={styles.button}
+                        swipeContainerStyle={item.STATUS == 1 ? [styles.swipeContentContainerStyle, tw`bg-gray-200`] : [styles.swipeContentContainerStyle, {backgroundColor: "#FAF6F6"}]}
+                        leftButtons={leftButton(item.ID)}
+                        rightButtons={rightButton(item.ID)}
+                      >
+                        <Pressable
+                          onPress={() => {
+                            setModalVisible(true), setCurrentPorduct(item);
+                          }}
+                        >
+                          <View style={item.STATUS == 1 ? tw`flex-row justify-between w-50 opacity-10` : tw`flex-row justify-between w-50` }>
+                            <View style={tw`min-h-full w-22`}>
+                              <Image
+                                resizeMode="cover"
+                                style={tw`h-full w-full rounded-xl`}
+                                source={{ uri: item.PICS[0] }}
+                              />
+                            </View>
+                            <View style={tw`px-6 p-5 justify-between w-full`}>
+                              <Text>{item["SKU"]}</Text>
+                              <Text numberOfLines={1}>{item.DESC}</Text>
+                            </View>
+                            <View style={tw`mr-4 justify-center`}>
+                              <Text>{"x " + item.QUAN}</Text>
+                            </View>
+                          </View>
+                        </Pressable>
+                      </SwipeItem>
+                    )}
+                  />
+                </SwipeProvider>
+              )}
             </View>
           </View>
 
@@ -215,70 +251,82 @@ const DetailsOrdersScreen = ({ route }) => {
           >
             <View style={tw`h-full bg-zinc-600/50`}>
               <View style={tw`h-full bg-white mt-40 rounded-t-3xl`}>
-                <Pressable onPress={() => setModalVisible(!modalVisible)}>
-                  <Text>
-                    <Icon
-                      style={tw`p-5`}
-                      type="antdesign"
-                      name="back"
-                      color="#B5000D"
-                    />
-                  </Text>
-
-                  <SliderBox
-                    images={currentproduct.PICS}
-                    sliderBoxHeight={250}
-                    resizeMode="contain"
-                    onCurrentImagePressed={index => {
-                      setModalgalleryVisible(true);
-                      setCurrentImage(index);
-                    }}
-                    firstItem={currentimage} />
-
-                  <Modal
-                    visible={modalgalleryVisible}
-                    onRequestClose={() => {
-                      setModalgalleryVisible(!modalgalleryVisible);
-                    }}
-                  >
-                    <View style={tw`flex-1 justify-center bg-black`}>
-                      <ImageZoom
-                        cropWidth={Dimensions.get('window').width}
-                        cropHeight={Dimensions.get('window').height}
-                        imageWidth={380}
-                        imageHeight={600}>
-                        <SliderBox
-                          images={currentproduct.PICS}
-                          sliderBoxHeight={600}
-                          resizeMode="contain"
-                          firstItem={currentimage} />
-                      </ImageZoom>
-                    </View>
-                  </Modal>
+                <Pressable style={tw`w-20`} onPress={() => setModalVisible(!modalVisible)}>
+                  <Icon
+                    style={tw`p-5`}
+                    type="antdesign"
+                    name="back"
+                    color="#B5000D"
+                  />
                 </Pressable>
 
-                <View style={tw`pb-6 items-center px-4`}>
+                <SliderBox
+                  sliderBoxHeight={250}
+                  images={currentproduct.PICS}
+                  resizeMode="contain"
+                  onCurrentImagePressed={(index) => {
+                    setModalgalleryVisible(true);
+                    setCurrentImage(index);
+                  }}
+                  firstItem={currentimage}
+                />
+
+                <Modal
+                  visible={modalgalleryVisible}
+                  onRequestClose={() => {
+                    setModalgalleryVisible(!modalgalleryVisible);
+                  }}
+                >
+                  <View style={tw`flex-1 justify-center bg-black`}>
+                    <ImageZoom
+                      cropWidth={Dimensions.get("window").width}
+                      cropHeight={Dimensions.get("window").height}
+                      imageWidth={380}
+                      imageHeight={600}
+                    >
+                      <SliderBox
+                        images={currentproduct.PICS}
+                        sliderBoxHeight={600}
+                        resizeMode="contain"
+                        firstItem={currentimage}
+                      />
+                    </ImageZoom>
+                  </View>
+                </Modal>
+
+                <View style={tw`pb-6 items-center px-6`}>
                   <View>
-                    <Text numberOfLines={2} style={tw`text-red-700 text-2xl text-center mb-5 mt-8`}>{currentproduct.DESC}</Text>
+                    <Text
+                      numberOfLines={2}
+                      style={tw`text-red-700 text-2xl text-center mb-5 mt-8`}
+                    >
+                      {currentproduct.DESC}
+                    </Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>SKU : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{currentproduct.SKU}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>
+                      {currentproduct.SKU}
+                    </Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>Code produit : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{currentproduct.EAN}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>
+                      {currentproduct.EAN}
+                    </Text>
                   </View>
                   <View style={tw`flex-row mb-2`}>
                     <Text style={tw`font-light`}>Quantité : </Text>
-                    <Text style={tw`text-red-700 font-bold`}>{"x" + currentproduct.QUAN}</Text>
+                    <Text style={tw`text-red-700 font-bold`}>
+                      {"x" + currentproduct.QUAN}
+                    </Text>
                   </View>
                 </View>
               </View>
             </View>
-          </Modal >
-        </View >
-      }
+          </Modal>
+        </View>
+      )}
     </View>
   );
 };
@@ -294,7 +342,6 @@ const styles = StyleSheet.create({
   },
   swipeContentContainerStyle: {
     justifyContent: "center",
-    backgroundColor: "#FAF6F6",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {

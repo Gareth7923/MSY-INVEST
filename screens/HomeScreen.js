@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
+  Alert
 } from "react-native";
 import { Icon } from "react-native-elements";
 import React, { useState, useEffect, useCallback } from "react";
@@ -31,16 +32,29 @@ const HomeScreen = ({ navigation }) => {
           }
       })
       .then((response) => {
-        setOrders(response.data);
+        if(currentStatus === "Toutes"){
+          setOrders(response.data);
+        } else {
+          const tab = [];
+
+          response.data.forEach((order) => {
+            if(order.prep === currentStatus) {
+              tab.push(order);
+            }
+          });
+
+          setOrders(tab);
+        }
       })
       .catch((error) => {
-        console.warn(error);
+        Alert.alert("Erreur d'authentification", "Le code d'utilisateur à été desactivé");
+
         logout();
       });   
     };
 
     getOrders();
-  }, [user]);
+  }, [currentStatus]);
 
 
   useEffect(() => {
@@ -73,19 +87,6 @@ const HomeScreen = ({ navigation }) => {
 
     return (new Date(dateMilliseconds).toLocaleDateString('fr-FR'));
   }
-
-  useEffect(() => {
-    const ArrayFilterStatus = () => {
-      if(currentStatus == "Toutes") {
-
-      } else {
-        oi
-      }
-    }
-  
-    ArrayFilterStatus();
-  }, [currentStatus])
-  
 
   return (
     <View style={tw`bg-white`}>
@@ -131,7 +132,7 @@ const HomeScreen = ({ navigation }) => {
       />
         <FlatList
           contentContainerStyle={{ flexGrow: 1, alignItems: "center", marginBottom: 50, paddingBottom: 260, }}
-          style={tw`bg-zinc-300 mt-3 pt-3 rounded-t-3xl`}
+          style={tw`bg-zinc-300 h-full mt-3 pt-3 rounded-t-3xl`}
           data={orders}
           keyExtractor={(item, index) => index}
           renderItem={({ item }) => (
