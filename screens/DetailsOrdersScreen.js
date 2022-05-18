@@ -23,6 +23,9 @@ import { SliderBox } from "react-native-image-slider-box";
 import ImageZoom from "react-native-image-pan-zoom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import { Camera } from "expo-camera";
+import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const DetailsOrdersScreen = ({ route }) => {
   const { user } = useAuth();
@@ -35,6 +38,9 @@ const DetailsOrdersScreen = ({ route }) => {
   const [Order, setOrder] = useState({});
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState("back");
+  const [ActiveCamera, setActiveCamera] = useState(false);
 
   const leftButton = (ProductId) => (
     <SwipeButtonsContainer
@@ -94,9 +100,15 @@ const DetailsOrdersScreen = ({ route }) => {
     setloadingProducts(true);
 
     const url =
-      "https://msyds.madtec.be/api/app/commande/" + OrderId + "/prod/" + ProductId + "/status/" + Status;
+      "https://msyds.madtec.be/api/app/commande/" +
+      OrderId +
+      "/prod/" +
+      ProductId +
+      "/status/" +
+      Status;
 
-    axios.post(url, null, {
+    axios
+      .post(url, null, {
         headers: {
           userid: "APP",
           authorization: user,
@@ -118,6 +130,19 @@ const DetailsOrdersScreen = ({ route }) => {
   useEffect(() => {
     getDetailsOrder();
   }, []);
+
+  const CameraFunction = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    setHasPermission(status === "granted");
+
+    if (hasPermission === null) {
+      return <View />;
+    }
+
+    if (hasPermission === false) {
+      return <Text>No access to camera</Text>;
+    }
+  };
 
   return (
     <View style={tw`flex-1 bg-white min-h-full`}>
@@ -172,14 +197,55 @@ const DetailsOrdersScreen = ({ route }) => {
                   {Order.prep}
                 </Text>
               </View>
-              <View
-                style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-35 h-8 bg-zinc-400 ml-2`}
+              
+              <TouchableOpacity
+                onPress={() => {
+                  setActiveCamera(true), CameraFunction();
+                }}
               >
-                <Icon type="antdesign" name="camerao" color="white" />
-                <Text style={tw`text-white 	text-center text-sm font-light`}>
-                  Prendre photo
-                </Text>
-              </View>
+                <View
+                  style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-35 h-8 bg-zinc-400 ml-2`}
+                >
+                  <Icon type="antdesign" name="camerao" color="white" />
+                  <Text style={tw`text-white 	text-center text-sm font-light`}>
+                    Prendre photo
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {ActiveCamera == true ? (
+                <View style={tw`flex-1`}>
+                  <Camera style={tw`flex-1`} type={type}>
+                    <View style={tw`flex-1 flex-row items-end bg-transparent`}>
+                      <View
+                        style={tw`flex-row h-42 w-full justify-end items-center`}
+                      >
+                        <TouchableOpacity
+                          style={tw`flex-row h-22 w-20 mr-24`}
+                          onPress={() => {
+                            setType(type === "back" ? "front" : "back");
+                          }}
+                        >
+                          <Ionicons
+                            name="radio-button-on"
+                            size={84}
+                            color="white"
+                          />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={tw`flex-row h-10 w-10 mx-4`}
+                          onPress={() => {
+                            setType(type === "back" ? "front" : "back");
+                          }}
+                        >
+                          <AntDesign name="sync" size={34} color="white" />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </Camera>
+                </View>
+              ) : null}
             </View>
           </View>
 
@@ -207,7 +273,17 @@ const DetailsOrdersScreen = ({ route }) => {
                     renderItem={({ item }) => (
                       <SwipeItem
                         style={styles.button}
-                        swipeContainerStyle={item.STATUS == 1 ? [styles.swipeContentContainerStyle, tw`bg-gray-200`] : [styles.swipeContentContainerStyle, {backgroundColor: "#FAF6F6"}]}
+                        swipeContainerStyle={
+                          item.STATUS == 1
+                            ? [
+                                styles.swipeContentContainerStyle,
+                                tw`bg-gray-200`,
+                              ]
+                            : [
+                                styles.swipeContentContainerStyle,
+                                { backgroundColor: "#FAF6F6" },
+                              ]
+                        }
                         leftButtons={leftButton(item.ID)}
                         rightButtons={rightButton(item.ID)}
                       >
@@ -216,7 +292,13 @@ const DetailsOrdersScreen = ({ route }) => {
                             setModalVisible(true), setCurrentPorduct(item);
                           }}
                         >
-                          <View style={item.STATUS == 1 ? tw`flex-row justify-between w-50 opacity-10` : tw`flex-row justify-between w-50` }>
+                          <View
+                            style={
+                              item.STATUS == 1
+                                ? tw`flex-row justify-between w-50 opacity-10`
+                                : tw`flex-row justify-between w-50`
+                            }
+                          >
                             <View style={tw`min-h-full w-22`}>
                               <Image
                                 resizeMode="cover"
@@ -251,7 +333,10 @@ const DetailsOrdersScreen = ({ route }) => {
           >
             <View style={tw`h-full bg-zinc-600/50`}>
               <View style={tw`h-full bg-white mt-40 rounded-t-3xl`}>
-                <Pressable style={tw`w-20`} onPress={() => setModalVisible(!modalVisible)}>
+                <Pressable
+                  style={tw`w-20`}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
                   <Icon
                     style={tw`p-5`}
                     type="antdesign"
@@ -357,5 +442,11 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     height: "50%",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "black",
+    width: 50,
+    height: 100,
   },
 });
