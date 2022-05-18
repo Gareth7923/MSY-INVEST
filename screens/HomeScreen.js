@@ -166,7 +166,7 @@ const HomeScreen = ({ navigation }) => {
                 <View style={tw`flex-row justify-around pt-0.5 rounded-xl w-30 bg-orange-400 mt-4`}>
                   <Icon type="antdesign" name="dropbox" color="white" />
                   <Text style={tw`text-white text-sm font-light `}>
-                    {item.status}
+                    {item.prep}
                   </Text>
                 </View>
               </View>

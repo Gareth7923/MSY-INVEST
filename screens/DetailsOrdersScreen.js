@@ -23,11 +23,9 @@ import { SliderBox } from "react-native-image-slider-box";
 import ImageZoom from "react-native-image-pan-zoom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
-import { Camera } from "expo-camera";
-import { AntDesign } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 
-const DetailsOrdersScreen = ({ route }) => {
+
+const DetailsOrdersScreen = ({ navigation, route }) => {
   const { user } = useAuth();
   const { OrderId } = route.params;
 
@@ -38,9 +36,6 @@ const DetailsOrdersScreen = ({ route }) => {
   const [Order, setOrder] = useState({});
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
-  const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState("back");
-  const [ActiveCamera, setActiveCamera] = useState(false);
 
   const leftButton = (ProductId) => (
     <SwipeButtonsContainer
@@ -124,25 +119,12 @@ const DetailsOrdersScreen = ({ route }) => {
   const ConvertDate = function (seconds) {
     const dateMilliseconds = seconds * 1000;
 
-    return new Date(dateMilliseconds).toLocaleDateString("fr-FR");
+    return new Date(dateMilliseconds).toLocaleDateString("en-GB");
   };
 
   useEffect(() => {
     getDetailsOrder();
   }, []);
-
-  const CameraFunction = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    setHasPermission(status === "granted");
-
-    if (hasPermission === null) {
-      return <View />;
-    }
-
-    if (hasPermission === false) {
-      return <Text>No access to camera</Text>;
-    }
-  };
 
   return (
     <View style={tw`flex-1 bg-white min-h-full`}>
@@ -197,10 +179,10 @@ const DetailsOrdersScreen = ({ route }) => {
                   {Order.prep}
                 </Text>
               </View>
-              
+
               <TouchableOpacity
                 onPress={() => {
-                  setActiveCamera(true), CameraFunction();
+                  navigation.navigate("CameraScreen");
                 }}
               >
                 <View
@@ -212,40 +194,6 @@ const DetailsOrdersScreen = ({ route }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-
-              {ActiveCamera == true ? (
-                <View style={tw`flex-1`}>
-                  <Camera style={tw`flex-1`} type={type}>
-                    <View style={tw`flex-1 flex-row items-end bg-transparent`}>
-                      <View
-                        style={tw`flex-row h-42 w-full justify-end items-center`}
-                      >
-                        <TouchableOpacity
-                          style={tw`flex-row h-22 w-20 mr-24`}
-                          onPress={() => {
-                            setType(type === "back" ? "front" : "back");
-                          }}
-                        >
-                          <Ionicons
-                            name="radio-button-on"
-                            size={84}
-                            color="white"
-                          />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={tw`flex-row h-10 w-10 mx-4`}
-                          onPress={() => {
-                            setType(type === "back" ? "front" : "back");
-                          }}
-                        >
-                          <AntDesign name="sync" size={34} color="white" />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </Camera>
-                </View>
-              ) : null}
             </View>
           </View>
 
@@ -276,13 +224,13 @@ const DetailsOrdersScreen = ({ route }) => {
                         swipeContainerStyle={
                           item.STATUS == 1
                             ? [
-                                styles.swipeContentContainerStyle,
-                                tw`bg-gray-200`,
-                              ]
+                              styles.swipeContentContainerStyle,
+                              tw`bg-gray-200`,
+                            ]
                             : [
-                                styles.swipeContentContainerStyle,
-                                { backgroundColor: "#FAF6F6" },
-                              ]
+                              styles.swipeContentContainerStyle,
+                              { backgroundColor: "#FAF6F6" },
+                            ]
                         }
                         leftButtons={leftButton(item.ID)}
                         rightButtons={rightButton(item.ID)}

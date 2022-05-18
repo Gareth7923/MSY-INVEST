@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import DetailsOrdersScreen from "./screens/DetailsOrdersScreen";
+import CameraScreen from "./screens/CameraScreen";
 import useAuth from "./hooks/useAuth";
 
 const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ const StackNavigator = () => {
               headerShadowVisible: false, 
               headerBackTitleVisible: false,
              }} name="DetailsOrdersScreen" component={DetailsOrdersScreen}/>
+              <Stack.Screen options={{headerShown: false}} name="CameraScreen" component={CameraScreen} />
         </Stack.Group>
         
       ) : (
