@@ -2,58 +2,112 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Alert
+    ImageBackground,
+    Modal
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import tw from "twrnc";
 import { Camera } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
 
 
-const CameraScreen = () => {
+
+
+const CameraScreen = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [type, setType] = useState("back");
+    const [isCameraReady, setIsCameraReady] = useState(false);
+    const [cameraRef, setCameraRef] = useState(null);
+    const [image, setImage] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+
 
     useEffect(() => {
         const CameraFunction = async () => {
             const { status } = await Camera.requestCameraPermissionsAsync();
-            setHasPermission(status === "granted");
+
+            if (status === 'granted') {
+                setHasPermission(status);
+            } else {
+                navigation.goBack();
+            }
         };
-
         CameraFunction();
-    })
+    }, []);
 
-    if (hasPermission === null) {
-        return <View />;
-    }
-    if (hasPermission === false) {
-   // return <Text>No access to camera</Text>;
+    const takePicture = async () => {
+        if (isCameraReady) {
+            const data = await cameraRef.takePictureAsync(null);
+            setImage(data.uri);
+        }
     }
 
     return (
         <View style={tw`flex-1`}>
-            {hasPermission === true ? 
-            <Camera style={tw`flex-1`} type={type}>
-                <View style={tw`flex-1 flex-row items-end bg-transparent`}>
-                    <View
-                        style={tw`flex-row h-32 w-full justify-center`}
+            {hasPermission === 'granted' ?
+                <View style={tw`flex-1`}>
+                    <Camera style={tw`flex-1`} type={type} ratio={'1:1'} ref={ref => { setCameraRef(ref) }} onCameraReady={() => { setIsCameraReady(true) }}>
+                        <View style={tw`flex-1 flex-row items-end bg-transparent justify-between h-32 pb-12 px-6`}>
+                            <View style={tw`flex-row`}>
+                                <TouchableOpacity
+                                    style={tw`h-22 w-20 justify-center items-center`}
+                                    onPress={() => navigation.goBack()}
+                                >
+                                    <Text style={tw`text-xl text-white `}>Annuler</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={tw`flex-row`}>
+                                <TouchableOpacity
+                                    style={tw`h-22 w-20 justify-center items-center`}
+                                    onPress={() => { takePicture(), setModalVisible(true) }}
+                                >
+                                    <Ionicons
+                                        name="radio-button-on"
+                                        size={84}
+                                        color="white"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={tw`flex-row`}>
+                                <TouchableOpacity
+                                    style={tw`h-22 w-20 justify-center items-center`}
+                                    onPress={() => {  setType(type === 'back' ? 'front' : 'back');}}
+                                >
+                                    <Ionicons
+                                        name="sync"
+                                        size={44}
+                                        color="white"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Camera>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
                     >
-                        <TouchableOpacity
-                            style={tw`flex-row h-22 w-20`}
-                            onPress={() => {
-                                setType(type === "back" ? "front" : "back");
-                            }}
-                        >
-                            <Ionicons
-                                name="radio-button-on"
-                                size={84}
-                                color="white"
-                            />
-                        </TouchableOpacity>
-                    </View>
+                        <View style={tw`flex-1`}>
+                            <ImageBackground source={{ uri: image }} resizeMode="cover" style={tw`flex-1`}>
+                                <View style={tw`flex-1 flex-row items-end bg-transparent justify-between pb-12 px-8`}>
+                                    <TouchableOpacity style={tw`h-20 w-17`} onPress={() => { setImage(null), setModalVisible(!modalVisible) }}>
+                                        <Ionicons name="close-circle" size={74} color="red" />
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={tw`h-20 w-17`} onPress={() => { }}>
+                                        <Ionicons name="checkmark-circle" size={74} color="white" />
+                                    </TouchableOpacity>
+                                </View>
+                            </ImageBackground>
+                        </View>
+                    </Modal>
                 </View>
-            </Camera>
-            : null }
+
+                : null}
+
         </View>
     )
 }

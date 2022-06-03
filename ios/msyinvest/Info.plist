@@ -80,5 +80,9 @@
 	<false/>
   <key>UIStatusBarStyle</key>
   <string>UIStatusBarStyleDefault</string>
+  <key>NSCameraUsageDescription</key>
+    <string>Besoin d'accéder à votre appareil photo pour prendre une photo.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Besoin d'accéder à votre microphone pour enregistrer une vidéo.</string>
 </dict>
 </plist>

@@ -10,7 +10,6 @@ const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [orders, setOrders] = useState([]);
 
   const db = SQLite.openDatabase('user.db');
 
@@ -58,7 +57,6 @@ export const AuthProvider = ({ children }) => {
       .then((response) => {
         saveUsercode(usercode);
         AuthStateChanged();
-        setOrders(response.data);
 
         db.transaction((tx) => {
           tx.executeSql('CREATE TABLE IF NOT EXISTS tbl_user(user_id INTEGER PRIMARY KEY AUTOINCREMENT, user_code VARCHAR(30))', []);
@@ -96,10 +94,9 @@ export const AuthProvider = ({ children }) => {
 
   const memodValue = useMemo(() => ({
     user,
-    orders,
     verifyuser,
     logout,
-  }), [user, orders]);
+  }), [user]);
 
   return (
     <AuthContext.Provider value={memodValue}>
