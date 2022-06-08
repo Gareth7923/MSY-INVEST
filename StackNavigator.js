@@ -12,30 +12,46 @@ const StackNavigator = () => {
   const { user } = useAuth();
 
   return (
-    <Stack.Navigator >
+    <Stack.Navigator>
       {user ? (
         <Stack.Group>
-          <Stack.Screen options={{headerShown: false}} name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen options={{ title: 'Détail de commande :',
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="HomeScreen"
+            component={HomeScreen}
+          />
+          <Stack.Screen
+            options={{
+              title: "Détail de commande :",
               headerStyle: {
-                backgroundColor: 'white',
+                backgroundColor: "white",
               },
               headerTitleStyle: {
-                color: '#3f3f46',
+                color: "#3f3f46",
                 fontSize: 18,
-                fontWeight: '200',
+                fontWeight: "200",
               },
-              headerTitleAlign: 'center',
-              headerTintColor: '#b91c1c',
-              headerShadowVisible: false, 
+              headerTitleAlign: "center",
+              headerTintColor: "#b91c1c",
+              headerShadowVisible: false,
               headerBackTitleVisible: false,
-             }} name="DetailsOrdersScreen" component={DetailsOrdersScreen}/>
-              <Stack.Screen options={{headerShown: false}} name="CameraScreen" component={CameraScreen} />
+            }}
+            name="DetailsOrdersScreen"
+            component={DetailsOrdersScreen}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="CameraScreen"
+            component={CameraScreen}
+          />
         </Stack.Group>
-        
       ) : (
         <Stack.Group>
-          <Stack.Screen options={{headerShown: false}} name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="LoginScreen"
+            component={LoginScreen}
+          />
         </Stack.Group>
       )}
     </Stack.Navigator>
