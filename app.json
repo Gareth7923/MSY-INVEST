@@ -4,6 +4,7 @@
     "icon": "",
     "slug": "msy-invest",
     "version": "1.0.0",
+    "orientation": "portrait",
     "ios": {
       "supportsTablet": true,
       "infoPlist": {

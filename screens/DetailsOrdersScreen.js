@@ -23,7 +23,10 @@ import { SliderBox } from "react-native-image-slider-box";
 import ImageZoom from "react-native-image-pan-zoom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import EStyleSheet from "react-native-extended-stylesheet";
 
+const window = Dimensions.get("window");
+const screen = Dimensions.get("screen");
 
 const DetailsOrdersScreen = ({ navigation, route }) => {
   const { user } = useAuth();
@@ -36,6 +39,19 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
   const [Order, setOrder] = useState({});
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
+
+  const [dimensions, setDimensions] = useState({ window, screen });
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      "change",
+      ({ window, screen }) => {
+        setDimensions({ window, screen });
+      }
+    );
+
+    //return () => subscription?.remove();
+  });
 
   const leftButton = (ProductId) => (
     <SwipeButtonsContainer
@@ -224,13 +240,13 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                         swipeContainerStyle={
                           item.STATUS == 1
                             ? [
-                              styles.swipeContentContainerStyle,
-                              tw`bg-gray-200`,
-                            ]
+                                styles.swipeContentContainerStyle,
+                                tw`bg-gray-200`,
+                              ]
                             : [
-                              styles.swipeContentContainerStyle,
-                              { backgroundColor: "#FAF6F6" },
-                            ]
+                                styles.swipeContentContainerStyle,
+                                { backgroundColor: "#FAF6F6" },
+                              ]
                         }
                         leftButtons={leftButton(item.ID)}
                         rightButtons={rightButton(item.ID)}
@@ -243,8 +259,8 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                           <View
                             style={
                               item.STATUS == 1
-                                ? tw`flex-row justify-between w-50 opacity-10`
-                                : tw`flex-row justify-between w-50`
+                                ? tw`flex-row justify-between w-7/12 opacity-10`
+                                : tw`flex-row justify-between w-7/12`
                             }
                           >
                             <View style={tw`min-h-full w-22`}>
@@ -254,7 +270,12 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                                 source={{ uri: item.PICS[0] }}
                               />
                             </View>
-                            <View style={tw`px-6 p-5 justify-between w-full`}>
+                            <View
+                              style={[
+                                tw`px-6 p-5 justify-between w-full`,
+                                styles.txtslider,
+                              ]}
+                            >
                               <Text>{item["SKU"]}</Text>
                               <Text numberOfLines={1}>{item.DESC}</Text>
                             </View>
@@ -294,7 +315,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                 </Pressable>
 
                 <SliderBox
-                  sliderBoxHeight={250}
+                  sliderBoxHeight={dimensions.screen.width === 600 ? 350 : 250}
                   images={currentproduct.PICS}
                   resizeMode="contain"
                   onCurrentImagePressed={(index) => {
@@ -314,7 +335,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                     <ImageZoom
                       cropWidth={Dimensions.get("window").width}
                       cropHeight={Dimensions.get("window").height}
-                      imageWidth={380}
+                      imageWidth={dimensions.screen.width === 600 ? 600 : 380}
                       imageHeight={600}
                     >
                       <SliderBox
@@ -366,7 +387,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
 
 export default DetailsOrdersScreen;
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   button: {
     width: "85%",
     height: 100,
@@ -396,5 +417,14 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     width: 50,
     height: 100,
+  },
+  "@media (min-width: 600) and (max-width: 900)": {
+    // media queries
+    button: {
+      width: "90%",
+    },
+    txtslider: {
+      width: "125%",
+    },
   },
 });
