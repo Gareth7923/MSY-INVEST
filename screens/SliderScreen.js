@@ -1,8 +1,18 @@
-import { View, Dimensions, Modal, TouchableOpacity, Platform, Image, Button } from 'react-native'
-import React, { useState, useEffect } from 'react';
+import { View, Dimensions, Modal, TouchableOpacity, Text, Image } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import Carousel from "../component/Carousel";
 import tw from "twrnc";
 import * as ImagePicker from 'expo-image-picker';
+import ImageZoom from "react-native-image-pan-zoom";
+
+const screen = Dimensions.get("screen");
+
+const data = [
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ_G9U9095poYEIvtg8fnA2Ef3dcjLEebptQ&usqp=CAU",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAKct50NCsVyvNuADQHKbmPKvN4vwU_kabkg&usqp=CAU",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmBIgYj1yY-r7Fh2ZwHmaAfq8tGJTXxy5pEg&usqp=CAU",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3Wjd-Cak78mooEfHTx64D7xhFtgBMZRFiiQ&usqp=CAU",
+];
 
 const SliderScreen = ({ navigation }) => {
 
@@ -24,41 +34,28 @@ const SliderScreen = ({ navigation }) => {
         }
     };
 
-    const convertImageToBase64 = async (uri) => {
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = function () {
-            resolve(xhr.response);
-          };
-          xhr.onerror = function () {
-            reject(new TypeError('Network request failed'));
-          };
-          xhr.responseType = 'blob';
-          xhr.open('GET', uri, true);
-          xhr.send(null);
-        });
-    
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-    
-        reader.onloadend = () => {
-          const toString = reader.result;
-
-        };
-    }
-    
     return (
         <View style={tw`flex-1 justify-center`}>
             <TouchableOpacity
                 style={tw`h-10 w-12 bg-black`}
                 onPress={() => {
                     navigation.navigate("CameraScreen", { OrderId: 123, User: "user" });
-                    //convertImageToBase64(image)
                 }}
             ></TouchableOpacity>
-            <Button title="Pick an image from camera roll" onPress={pickImage} />
-            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+      <ImageZoom cropWidth={Dimensions.get('screen').width}
+        cropHeight={Dimensions.get('screen').height}
+        imageWidth={Dimensions.get('screen').width}
+        imageHeight={Dimensions.get('screen').width}
+        enableCenterFocus={false}>
 
+                <Carousel
+                    data={data}
+                    width={Dimensions.get('screen').width}
+                    height={Dimensions.get('screen').width}
+                    FirstImage={0}
+                    CurrentImagePressed={(index) => { }}
+                />
+</ImageZoom>
         </View>
     )
 }

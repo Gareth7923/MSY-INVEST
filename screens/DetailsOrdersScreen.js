@@ -171,14 +171,14 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
               </Text>
             </View>
             <View style={tw`flex-row text-center mb-2`}>
-                <View
-                  style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-30 h-8 bg-orange-400 mr-2`}
-                >
-                  <Icon type="antdesign" name="dropbox" color="white" />
-                  <Text style={tw`text-white text-center text-sm font-light`}>
-                    {Order.prep}
-                  </Text>
-                </View>
+              <View
+                style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-30 h-8 bg-orange-400 mr-2`}
+              >
+                <Icon type="antdesign" name="dropbox" color="white" />
+                <Text style={tw`text-white text-center text-sm font-light`}>
+                  {Order.prep}
+                </Text>
+              </View>
 
               <TouchableOpacity
                 onPress={() => {
@@ -315,13 +315,13 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                   }}
                 >
                   <View style={tw`flex-1 justify-center bg-white`}>
-                    <Carousel
-                      data={currentproduct.PICS}
-                      width={dimensions.width}
-                      height={dimensions.width > 480 ? 350 : dimensions.width}
-                      FirstImage={imagePressed}
-                      CurrentImagePressed={(index) => {}}
-                    />
+                      <Carousel
+                        data={currentproduct.PICS}
+                        width={dimensions.width}
+                        height={dimensions.width}
+                        FirstImage={imagePressed}
+                        CurrentImagePressed={(index) => { }}
+                      />
                   </View>
                 </Modal>
 

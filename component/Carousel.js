@@ -12,7 +12,7 @@ const Carousel = ({ data, CurrentImagePressed, FirstImage, width, height }) => {
   useEffect(() => {
     setImages(data);
 
-    if(FirstImage){
+    if (FirstImage) {
       setCurrentIndex(FirstImage);
     }
   }, [data, FirstImage]);
@@ -60,20 +60,20 @@ const Carousel = ({ data, CurrentImagePressed, FirstImage, width, height }) => {
 
   return (
     <View >
-      <FlatList
-        data={images}
-        ref={isFlatList}
-        keyExtractor={({ }, index) => index}
-        horizontal
-        pagingEnabled
-        scrollEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={renderlItem}
-        onViewableItemsChanged={onViewRef.current}
-        viewabilityConfig={viewConfigRef.current}
-        initialScrollIndex={FirstImage ? FirstImage : 0}
-        getItemLayout={getItemLayout}
-      />
+        <FlatList
+          data={images}
+          ref={isFlatList}
+          keyExtractor={({ }, index) => index}
+          horizontal
+          pagingEnabled
+          scrollEnabled
+          showsHorizontalScrollIndicator={false}
+          renderItem={renderlItem}
+          onViewableItemsChanged={onViewRef.current}
+          viewabilityConfig={viewConfigRef.current}
+          initialScrollIndex={FirstImage ? FirstImage : 0}
+          getItemLayout={getItemLayout}
+        />
 
       <View style={tw`flex-row justify-center my-8`}>
         {images.map(({ }, index) => (
@@ -87,7 +87,7 @@ const Carousel = ({ data, CurrentImagePressed, FirstImage, width, height }) => {
 
         ))}
       </View>
-    </View>
+    </View >
   )
 }
 
