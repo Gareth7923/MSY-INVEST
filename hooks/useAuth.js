@@ -1,5 +1,5 @@
 import { Alert } from 'react-native'
-import React, { createContext, useContext, useState, useEffect, useMemo, useLayoutEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import * as SQLite from "expo-sqlite";
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';

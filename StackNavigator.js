@@ -4,6 +4,7 @@ import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import DetailsOrdersScreen from "./screens/DetailsOrdersScreen";
 import CameraScreen from "./screens/CameraScreen";
+import SliderScreen from "./screens/SliderScreen";
 import useAuth from "./hooks/useAuth";
 
 const Stack = createNativeStackNavigator();

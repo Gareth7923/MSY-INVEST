@@ -1,46 +1,27 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Modal,
-  Pressable,
-  Dimensions,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { Text, View, TouchableOpacity, Image, Modal, Pressable, Dimensions, ActivityIndicator, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
-import {
-  SwipeItem,
-  SwipeButtonsContainer,
-  SwipeProvider,
-} from "react-native-swipe-item";
-import { SliderBox } from "react-native-image-slider-box";
+import { SwipeItem, SwipeButtonsContainer, SwipeProvider } from "react-native-swipe-item";;
 import ImageZoom from "react-native-image-pan-zoom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import EStyleSheet from "react-native-extended-stylesheet";
+import Carousel from "../component/Carousel";
 
-const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
 
 const DetailsOrdersScreen = ({ navigation, route }) => {
   const { user } = useAuth();
   const { OrderId } = route.params;
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalgalleryVisible, setModalgalleryVisible] = useState(false);
-  const [currentimage, setCurrentImage] = useState(null);
+  const [imagePressed, setImagePressed] = useState(false);
+  const [dimensions, setDimensions] = useState(screen);
   const [currentproduct, setCurrentPorduct] = useState({});
   const [Order, setOrder] = useState({});
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
-
-  const [dimensions, setDimensions] = useState({ window, screen });
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
@@ -49,8 +30,6 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
         setDimensions({ window, screen });
       }
     );
-
-    //return () => subscription?.remove();
   });
 
   const leftButton = (ProductId) => (
@@ -97,10 +76,9 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
           userid: "APP",
           authorization: user,
         },
-        timeout: 5000,
       })
       .then((response) => {
-        setOrder(response.data[0]);
+        setOrder(SortArray(response.data[0]));
         setLoadingOrder(false);
         setloadingProducts(false);
       })
@@ -126,11 +104,17 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
         },
       })
       .then((response) => {
-        setOrder(response.data[0]);
+        setOrder(SortArray(response.data[0]));
         setloadingProducts(false);
       })
       .catch((error) => console.warn(error));
   };
+
+  const SortArray = (ProductArray) => {
+    (ProductArray.produits).sort((a, b) => parseInt(a.STATUS) - parseInt(b.STATUS))
+
+    return ProductArray;
+  }
 
   const ConvertDate = function (seconds) {
     const dateMilliseconds = seconds * 1000;
@@ -187,25 +171,25 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
               </Text>
             </View>
             <View style={tw`flex-row text-center mb-2`}>
-              <View
-                style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-30 bg-orange-400 mr-2`}
-              >
-                <Icon type="antdesign" name="dropbox" color="white" />
-                <Text style={tw`text-white 	text-center text-sm font-light`}>
-                  {Order.prep}
-                </Text>
-              </View>
+                <View
+                  style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-30 h-8 bg-orange-400 mr-2`}
+                >
+                  <Icon type="antdesign" name="dropbox" color="white" />
+                  <Text style={tw`text-white text-center text-sm font-light`}>
+                    {Order.prep}
+                  </Text>
+                </View>
 
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("CameraScreen");
+                  navigation.navigate("CameraScreen", { OrderId: Order.id, User: user });
                 }}
               >
                 <View
                   style={tw`flex-row justify-around content-center items-center pb-0.5 pl-2 pr-2 rounded-xl w-35 h-8 bg-zinc-400 ml-2`}
                 >
                   <Icon type="antdesign" name="camerao" color="white" />
-                  <Text style={tw`text-white 	text-center text-sm font-light`}>
+                  <Text style={tw`text-white text-center text-sm font-light`}>
                     Prendre photo
                   </Text>
                 </View>
@@ -217,7 +201,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
             <View style={tw`flex-row ml-8 pb-4`}>
               <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
             </View>
-            <View style={tw`flex-row justify-center`}>
+            <View style={tw`flex-row justify-center pb-8`}>
               {loadingProducts ? (
                 <ActivityIndicator
                   size="large"
@@ -240,13 +224,13 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                         swipeContainerStyle={
                           item.STATUS == 1
                             ? [
-                                styles.swipeContentContainerStyle,
-                                tw`bg-gray-200`,
-                              ]
+                              styles.swipeContentContainerStyle,
+                              tw`bg-gray-200`,
+                            ]
                             : [
-                                styles.swipeContentContainerStyle,
-                                { backgroundColor: "#FAF6F6" },
-                              ]
+                              styles.swipeContentContainerStyle,
+                              { backgroundColor: "#FAF6F6" },
+                            ]
                         }
                         leftButtons={leftButton(item.ID)}
                         rightButtons={rightButton(item.ID)}
@@ -301,7 +285,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
             }}
           >
             <View style={tw`h-full bg-zinc-600/50`}>
-              <View style={tw`h-full bg-white mt-40 rounded-t-3xl`}>
+              <View style={tw`h-full bg-white mt-40 rounded-t-3xl `}>
                 <Pressable
                   style={tw`w-20`}
                   onPress={() => setModalVisible(!modalVisible)}
@@ -314,15 +298,14 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                   />
                 </Pressable>
 
-                <SliderBox
-                  sliderBoxHeight={dimensions.screen.width === 600 ? 350 : 250}
-                  images={currentproduct.PICS}
-                  resizeMode="contain"
-                  onCurrentImagePressed={(index) => {
-                    setModalgalleryVisible(true);
-                    setCurrentImage(index);
+                <Carousel
+                  data={currentproduct.PICS}
+                  width={dimensions.width}
+                  height={dimensions.width > 480 ? 350 : 200}
+                  CurrentImagePressed={(index) => {
+                    setImagePressed(index);
+                    setModalgalleryVisible(!modalgalleryVisible);
                   }}
-                  firstItem={currentimage}
                 />
 
                 <Modal
@@ -331,28 +314,22 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                     setModalgalleryVisible(!modalgalleryVisible);
                   }}
                 >
-                  <View style={tw`flex-1 justify-center bg-black`}>
-                    <ImageZoom
-                      cropWidth={Dimensions.get("window").width}
-                      cropHeight={Dimensions.get("window").height}
-                      imageWidth={dimensions.screen.width === 600 ? 600 : 380}
-                      imageHeight={600}
-                    >
-                      <SliderBox
-                        images={currentproduct.PICS}
-                        sliderBoxHeight={600}
-                        resizeMode="contain"
-                        firstItem={currentimage}
-                      />
-                    </ImageZoom>
+                  <View style={tw`flex-1 justify-center bg-white`}>
+                    <Carousel
+                      data={currentproduct.PICS}
+                      width={dimensions.width}
+                      height={dimensions.width > 480 ? 350 : dimensions.width}
+                      FirstImage={imagePressed}
+                      CurrentImagePressed={(index) => {}}
+                    />
                   </View>
                 </Modal>
 
-                <View style={tw`pb-6 items-center px-6`}>
+                <View style={tw`pb-6 items-center px-6 pt-8`}>
                   <View>
                     <Text
                       numberOfLines={2}
-                      style={tw`text-red-700 text-2xl text-center mb-5 mt-8`}
+                      style={tw`text-red-700 text-2xl text-center mb-5`}
                     >
                       {currentproduct.DESC}
                     </Text>
@@ -427,4 +404,5 @@ const styles = EStyleSheet.create({
       width: "125%",
     },
   },
+
 });

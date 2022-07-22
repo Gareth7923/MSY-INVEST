@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "msy-invest",
-    "icon": "",
+    "name": "MSY Invest",
+    "icon": "./assets/images/icon-msy.png",
     "slug": "msy-invest",
     "version": "1.0.0",
     "orientation": "portrait",
