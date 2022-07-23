@@ -188,9 +188,9 @@ const HomeScreen = ({ navigation }) => {
   const { user, logout } = useAuth();
   const [currentStatus, setCurrentStatus] = useState("Toutes");
   const [ArrayStatus, setArrayStatus] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(tab);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const getOrders = async () => {
       axios
         .get("https://msyds.madtec.be/api/app/commandes", {
@@ -251,7 +251,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     getOrderStatus();
-  }, [orders]);
+  }, [orders]);*/
 
   const ConvertDate = function (seconds) {
     const dateMilliseconds = seconds * 1000;
