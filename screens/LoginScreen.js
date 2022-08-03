@@ -21,7 +21,7 @@ EStyleSheet.build({
 
 const LoginScreen = () => {
   const [textencrypt, setTextencrypt] = useState(true);
-  const [usercode, setUsercode] = useState('KtzKKjxGeDVHYaxjNvtYh4MA');
+  const [usercode, setUsercode] = useState(null);
 
   const { verifyuser } = useAuth();
 

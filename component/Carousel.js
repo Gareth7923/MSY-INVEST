@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react'
 import { View, Image, FlatList, TouchableOpacity, Dimensions, Modal, Text } from 'react-native'
 import tw from "twrnc";
 
-const screen = Dimensions.get("screen");
-
 const Carousel = ({ data, CurrentImagePressed, FirstImage, width, height }) => {
   const isFlatList = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,7 +55,7 @@ const Carousel = ({ data, CurrentImagePressed, FirstImage, width, height }) => {
       </View>
     )
   }
-
+  
   return (
     <View >
         <FlatList
