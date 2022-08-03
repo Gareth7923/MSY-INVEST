@@ -35,27 +35,13 @@ const SliderScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={tw`flex-1 justify-center`}>
+        <View style={tw`flex-1 justify-center items-center`}>
             <TouchableOpacity
                 style={tw`h-10 w-12 bg-black`}
                 onPress={() => {
                     navigation.navigate("CameraScreen", { OrderId: 123, User: "user" });
                 }}
             ></TouchableOpacity>
-      <ImageZoom cropWidth={Dimensions.get('screen').width}
-        cropHeight={Dimensions.get('screen').height}
-        imageWidth={Dimensions.get('screen').width}
-        imageHeight={Dimensions.get('screen').width}
-        enableCenterFocus={false}>
-
-                <Carousel
-                    data={data}
-                    width={Dimensions.get('screen').width}
-                    height={Dimensions.get('screen').width}
-                    FirstImage={0}
-                    CurrentImagePressed={(index) => { }}
-                />
-</ImageZoom>
         </View>
     )
 }
