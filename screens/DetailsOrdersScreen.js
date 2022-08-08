@@ -1,13 +1,27 @@
-import { Text, View, TouchableOpacity, Image, Modal, Pressable, Dimensions, ActivityIndicator, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Modal,
+  Pressable,
+  Dimensions,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
-import { SwipeItem, SwipeButtonsContainer, SwipeProvider } from "react-native-swipe-item";;
-import ImageZoom from "react-native-image-pan-zoom";
+import {
+  SwipeItem,
+  SwipeButtonsContainer,
+  SwipeProvider,
+} from "react-native-swipe-item";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import EStyleSheet from "react-native-extended-stylesheet";
 import Carousel from "../component/Carousel";
+import { Select, Box, CheckIcon } from "native-base";
 
 const screen = Dimensions.get("screen");
 
@@ -22,6 +36,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
   const [Order, setOrder] = useState({});
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [loadingProducts, setloadingProducts] = useState(true);
+  const [service, setService] = useState(null);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
@@ -111,10 +126,12 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
   };
 
   const SortArray = (ProductArray) => {
-    (ProductArray.produits).sort((a, b) => parseInt(a.STATUS) - parseInt(b.STATUS))
+    ProductArray.produits.sort(
+      (a, b) => parseInt(a.STATUS) - parseInt(b.STATUS)
+    );
 
     return ProductArray;
-  }
+  };
 
   const ConvertDate = function (seconds) {
     const dateMilliseconds = seconds * 1000;
@@ -125,6 +142,10 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
   useEffect(() => {
     getDetailsOrder();
   }, []);
+
+  const SelectItems = useMemo(() => {
+    <Select.Item label={"ffff"} value={"ffff"} />;
+  });
 
   return (
     <View style={tw`flex-1 bg-white min-h-full`}>
@@ -182,7 +203,10 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
 
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("CameraScreen", { OrderId: Order.id, User: user });
+                  navigation.navigate("CameraScreen", {
+                    OrderId: Order.id,
+                    User: user,
+                  });
                 }}
               >
                 <View
@@ -201,7 +225,7 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
             <View style={tw`flex-row ml-8 pb-4`}>
               <Text style={tw`text-red-700 font-bold`}> Articles :</Text>
             </View>
-            <View style={tw`flex-row justify-center pb-8`}>
+            <View style={tw`flex-row justify-center pb-8 px-8`}>
               {loadingProducts ? (
                 <ActivityIndicator
                   size="large"
@@ -224,28 +248,28 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                         swipeContainerStyle={
                           item.STATUS == 1
                             ? [
-                              styles.swipeContentContainerStyle,
-                              tw`bg-gray-200`,
-                            ]
+                                styles.swipeContentContainerStyle,
+                                tw`bg-gray-200`,
+                              ]
                             : [
-                              styles.swipeContentContainerStyle,
-                              { backgroundColor: "#FAF6F6" },
-                            ]
+                                styles.swipeContentContainerStyle,
+                                { backgroundColor: "#FAF6F6" },
+                              ]
                         }
                         leftButtons={leftButton(item.ID)}
                         rightButtons={rightButton(item.ID)}
                       >
-                        <Pressable
-                          onPress={() => {
-                            setModalVisible(true), setCurrentPorduct(item);
-                          }}
+                        <View
+                          style={
+                            item.STATUS == 1
+                              ? tw`flex-row justify-between w-9/12 h-full opacity-10`
+                              : tw`flex-row justify-between w-9/12 h-full`
+                          }
                         >
-                          <View
-                            style={
-                              item.STATUS == 1
-                                ? tw`flex-row justify-between w-7/12 opacity-10`
-                                : tw`flex-row justify-between w-7/12`
-                            }
+                          <Pressable
+                            onPress={() => {
+                              setModalVisible(true), setCurrentPorduct(item);
+                            }}
                           >
                             <View style={tw`min-h-full w-22`}>
                               <Image
@@ -254,20 +278,49 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                                 source={{ uri: item.PICS[0] }}
                               />
                             </View>
+                          </Pressable>
+                          <View
+                            style={[
+                              tw`p-3 justify-between w-full`,
+                              styles.txtslider,
+                            ]}
+                          >
+                            <Text>{item["SKU"]}</Text>
+                            <Text numberOfLines={1}>{item.DESC}</Text>
                             <View
-                              style={[
-                                tw`px-6 p-5 justify-between w-full`,
-                                styles.txtslider,
-                              ]}
+                              style={tw`flex-row justify-between items-center`}
                             >
-                              <Text>{item["SKU"]}</Text>
-                              <Text numberOfLines={1}>{item.DESC}</Text>
-                            </View>
-                            <View style={tw`mr-4 justify-center`}>
-                              <Text>{"x " + item.QUAN}</Text>
+                              <View
+                                style={tw`flex-row justify-between items-center`}
+                              >
+                                <Text style={tw`text-gray-400 text-xs`}>Commandé: </Text>
+                                <Text style={tw`text-gray-400 text-xs`}>{item.QUAN}</Text>
+                              </View>
+                              <View
+                                style={tw`flex-row justify-between items-center`}
+                              >
+                                <Text style={tw`text-gray-400 text-xs`}>Stock: </Text>
+
+                                <Select
+                                  selectedValue={service}
+                                  minWidth="60"
+                                  borderWidth="0"
+                                  fontSize="xs"
+                                  color="white"
+                                  placeholder={item.QUAN}
+                                  _selectedItem={{
+                                    endIcon: <CheckIcon size="5" />,
+                                  }}
+                                  onValueChange={(itemValue) =>
+                                    setService(itemValue)
+                                  }
+                                >
+                                  <Select.Item label={"ffff"} value={"ffff"} />
+                                </Select>
+                              </View>
                             </View>
                           </View>
-                        </Pressable>
+                        </View>
                       </SwipeItem>
                     )}
                   />
@@ -315,13 +368,13 @@ const DetailsOrdersScreen = ({ navigation, route }) => {
                   }}
                 >
                   <View style={tw`flex-1 justify-center bg-white`}>
-                      <Carousel
-                        data={currentproduct.PICS}
-                        width={dimensions.width}
-                        height={dimensions.width}
-                        FirstImage={imagePressed}
-                        CurrentImagePressed={(index) => { }}
-                      />
+                    <Carousel
+                      data={currentproduct.PICS}
+                      width={dimensions.width}
+                      height={dimensions.width}
+                      FirstImage={imagePressed}
+                      CurrentImagePressed={(index) => {}}
+                    />
                   </View>
                 </Modal>
 
@@ -366,7 +419,7 @@ export default DetailsOrdersScreen;
 
 const styles = EStyleSheet.create({
   button: {
-    width: "85%",
+    width: "98%",
     height: 100,
     alignSelf: "center",
     marginVertical: 5,
@@ -404,5 +457,4 @@ const styles = EStyleSheet.create({
       width: "125%",
     },
   },
-
 });
